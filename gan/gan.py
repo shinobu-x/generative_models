@@ -10,21 +10,6 @@ from torchvision import datasets
 from torchvision import transforms
 # Generative Adversarial Networks
 # https://arxiv.org/abs/1406.2661
-
-def init_weight(network):
-    for m in network.modules():
-        classname = m.__class__.__name__
-        weight_shape = list(m.weight.data.size())
-        m.bias.data.fill_(0)
-        if classname.find('Conv') != -1:
-            l = np.prod(weight_shape[1: 4])
-            r = np.prod(weight_shape[2: 4]) * weight_shape[0]
-        elif classname.find('Linear') != -1:
-            l = np.prod(weight_shape[1])
-            r = np.prod(weight_spape[0])
-        bound = np.sqrt(6.0 / (l + r))
-        m.weight.data.uniform_(-bound, bound)
-
 class Generator(nn.Module):
     def __init__(self, input_dim = 100, output_dim = 1, input_size = 32):
         super(Generator, self).__init__()
@@ -44,7 +29,6 @@ class Generator(nn.Module):
                 nn.ReLU(),
                 nn.ConvTranspose2d(64, self.output_dim, 4, 2, 1),
                 nn.Tanh())
-        init_weight(self)
 
     def forward(self, x):
         x = self.classifier(x)
@@ -70,7 +54,6 @@ class Discriminator(nn.Module):
                 nn.Conv2d(64, 128, 4, 2, 1),
                 nn.BatchNorm2d(128),
                 nn.LeakyReLU(0.2))
-        init_weight(self)
 
     def forward(self, x):
         x = self.conv(x)
